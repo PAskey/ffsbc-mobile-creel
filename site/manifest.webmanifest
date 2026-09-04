@@ -1,0 +1,15 @@
+{
+  "name": "Marquart Lake Creel",
+  "short_name": "Creel",
+  "description": "Report your catch at Marquart Lake — Freshwater Fisheries Society of BC.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0d5c63",
+  "theme_color": "#0d5c63",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

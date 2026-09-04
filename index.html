@@ -1,0 +1,549 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0d5c63">
+<link rel="manifest" href="manifest.webmanifest">
+<title>Marquart Lake Creel</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🎣%3C/text%3E%3C/svg%3E">
+<style>
+  :root{
+    --bg:#f2f6f7; --card:#ffffff; --ink:#12303a; --muted:#5b7480;
+    --line:#d7e3e6; --brand:#0d5c63; --brand-2:#12808a; --accent:#f2a541;
+    --good:#1f8a4c; --bad:#c0392b; --field:#ffffff; --field-line:#bcd0d5;
+    --shadow:0 1px 3px rgba(18,48,58,.08),0 6px 18px rgba(18,48,58,.06);
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#0b1416; --card:#122227; --ink:#e7f0f2; --muted:#9db3ba;
+      --line:#20363c; --brand:#3fb0ba; --brand-2:#5cc6cf; --accent:#f2b563;
+      --good:#4cc47c; --bad:#f0705f; --field:#0e1b1f; --field-line:#2c454c;
+      --shadow:0 1px 3px rgba(0,0,0,.4),0 6px 18px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"]{
+      --bg:#0b1416; --card:#122227; --ink:#e7f0f2; --muted:#9db3ba;
+      --line:#20363c; --brand:#3fb0ba; --brand-2:#5cc6cf; --accent:#f2b563;
+      --good:#4cc47c; --bad:#f0705f; --field:#0e1b1f; --field-line:#2c454c;
+      --shadow:0 1px 3px rgba(0,0,0,.4),0 6px 18px rgba(0,0,0,.35);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.45; -webkit-text-size-adjust:100%;
+    padding:0 0 env(safe-area-inset-bottom);
+  }
+  .wrap{max-width:560px;margin:0 auto;padding:0 16px 40px}
+  header.app{
+    background:linear-gradient(135deg,var(--brand),var(--brand-2));
+    color:#fff; padding:20px 16px 18px;
+    padding-top:calc(18px + env(safe-area-inset-top));
+    text-align:center; border-radius:0 0 18px 18px; box-shadow:var(--shadow);
+  }
+  header.app .kicker{font-size:12px;letter-spacing:.14em;text-transform:uppercase;opacity:.85;font-weight:600}
+  header.app h1{margin:4px 0 2px;font-size:22px;line-height:1.15}
+  header.app .lake{font-size:15px;opacity:.95}
+  .net{display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:12px;
+    background:rgba(255,255,255,.16);padding:4px 10px;border-radius:999px}
+  .net .dot{width:8px;height:8px;border-radius:50%;background:#8de0a0}
+  .net.off .dot{background:#f2c14e}
+  .card{
+    background:var(--card); border:1px solid var(--line); border-radius:14px;
+    padding:16px; margin-top:16px; box-shadow:var(--shadow);
+  }
+  .autobox{border-style:dashed}
+  .autorow{display:flex;justify-content:space-between;gap:10px;font-size:14px;padding:3px 0}
+  .autorow span:first-child{color:var(--muted)}
+  .autorow span:last-child{font-weight:600;text-align:right}
+  h2.sec{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--brand);margin:2px 0 12px}
+  label.fld{display:block;margin:0 0 14px}
+  label.fld > .lbl{display:block;font-size:14px;font-weight:600;margin-bottom:6px}
+  label.fld .hint{font-weight:400;color:var(--muted);font-size:12.5px}
+  input[type=number],select,textarea{
+    width:100%;font-size:16px;padding:12px 12px;border:1px solid var(--field-line);
+    border-radius:10px;background:var(--field);color:var(--ink);appearance:none;
+  }
+  input:focus,select:focus,textarea:focus{outline:2px solid var(--brand-2);outline-offset:1px}
+  select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%235b7480' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;background-position:right 12px center;padding-right:36px}
+  select:disabled{opacity:.5;background-color:var(--bg)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  /* tiered chip controls */
+  .level{margin-bottom:16px}
+  .level:last-child{margin-bottom:0}
+  .sublabel{font-size:14px;font-weight:600;margin:0 0 8px}
+  .sublabel .hint{font-weight:400;color:var(--muted);font-size:12.5px}
+  .opts{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{position:relative;display:inline-flex}
+  .chip input{position:absolute;opacity:0;width:0;height:0}
+  .chip span{display:inline-block;padding:10px 14px;border:1.5px solid var(--field-line);border-radius:999px;
+    background:var(--field);font-size:14.5px;cursor:pointer;user-select:none;transition:background .12s,border-color .12s}
+  .chip input:checked + span{background:var(--brand);border-color:var(--brand);color:#fff;font-weight:600}
+  .chip input:focus-visible + span{outline:2px solid var(--brand-2);outline-offset:2px}
+  .chip input:disabled + span{opacity:.4;cursor:not-allowed}
+  .icehint{font-size:13.5px;color:var(--muted);background:var(--bg);border:1px solid var(--line);
+    border-radius:10px;padding:10px 12px}
+  .catch{border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px;background:var(--bg)}
+  .catch.stocked{border-color:var(--brand-2)}
+  .catch .top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}
+  .catch .top .n{font-size:14px;font-weight:700;color:var(--ink)}
+  .catch .top .tag{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+    color:var(--brand);background:rgba(18,128,138,.12);padding:2px 8px;border-radius:999px}
+  .catch .kc{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+  .rm{background:none;border:none;color:var(--bad);font-size:13px;font-weight:600;padding:4px 6px;cursor:pointer}
+  .btn{display:block;width:100%;border:none;border-radius:12px;padding:15px;font-size:16px;font-weight:700;cursor:pointer;text-align:center}
+  .btn.primary{background:var(--brand);color:#fff;box-shadow:var(--shadow)}
+  .btn.primary:active{transform:translateY(1px)}
+  .btn.ghost{background:transparent;color:var(--brand);border:1.5px dashed var(--field-line)}
+  .btn.small{padding:11px;font-size:14px}
+  .muted{color:var(--muted);font-size:13px}
+  .err{color:var(--bad);font-size:13px;margin-top:6px;display:none}
+  .err.show{display:block}
+  footer{margin-top:26px;text-align:center;color:var(--muted);font-size:12px}
+  details.admin{margin-top:22px;font-size:13px;color:var(--muted)}
+  details.admin summary{cursor:pointer;padding:6px 0}
+  .adminbtns{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+  .adminbtns .btn{width:auto;flex:1 1 auto;background:var(--card);border:1px solid var(--line);color:var(--ink)}
+  .done{text-align:center;padding:26px 6px}
+  .done .check{width:74px;height:74px;border-radius:50%;background:var(--good);margin:0 auto 14px;display:flex;align-items:center;justify-content:center}
+  .done .check svg{width:38px;height:38px;stroke:#fff;stroke-width:3;fill:none}
+  .done h2{margin:0 0 6px;color:var(--ink);text-transform:none;letter-spacing:0;font-size:20px}
+  .hidden{display:none !important}
+  .qcount{font-weight:700;color:var(--brand)}
+</style>
+</head>
+<body>
+<header class="app">
+  <div class="kicker">Freshwater Fisheries Society of BC</div>
+  <h1>Report Your Catch</h1>
+  <div class="lake">📍 Marquart Lake</div>
+  <div class="net" id="net"><span class="dot"></span><span id="netTxt">Online</span></div>
+</header>
+
+<div class="wrap">
+  <div id="formView">
+    <div class="card autobox">
+      <div class="autorow"><span>Lake</span><span>Marquart</span></div>
+      <label class="fld" style="margin:10px 0 0">
+        <span class="lbl">Date fished</span>
+        <input id="interview_date" type="date" required>
+        <span class="hint">Set to today automatically — change it if you're reporting an earlier trip.</span>
+        <div class="err" data-for="interview_date">Please enter the date you fished.</div>
+      </label>
+      <div class="autorow" style="margin-top:10px"><span>Recorded by</span><span>Mobile app</span></div>
+    </div>
+
+    <form id="creelForm" novalidate>
+      <div class="card">
+        <h2 class="sec">How were you fishing?</h2>
+
+        <div class="level">
+          <div class="sublabel">Vessel</div>
+          <div class="opts" id="vesselOpts">
+            <label class="chip"><input type="radio" name="vessel" value="SHORE"><span>Shore / dock</span></label>
+            <label class="chip"><input type="radio" name="vessel" value="BOAT"><span>Boat</span></label>
+            <label class="chip"><input type="radio" name="vessel" value="SPV"><span>Single-person craft (kayak, bellyboat, etc.)</span></label>
+            <label class="chip" id="iceChip"><input type="radio" name="vessel" value="ICE"><span>Ice</span></label>
+          </div>
+          <div class="err" data-for="vessel">Please choose a vessel.</div>
+        </div>
+
+        <div class="level" id="methodLevel">
+          <div class="sublabel">Method <span class="hint">(pick one or both)</span></div>
+          <div class="opts" id="methodOpts">
+            <label class="chip"><input type="checkbox" name="method" value="TROLL"><span>Troll</span></label>
+            <label class="chip"><input type="checkbox" name="method" value="CAST"><span>Cast</span></label>
+          </div>
+          <div class="err" data-for="method">Please choose troll, cast, or both.</div>
+        </div>
+        <div class="level hidden" id="iceHint">
+          <div class="sublabel">Method</div>
+          <div class="icehint">❄️ Ice fishing (set automatically for ice).</div>
+        </div>
+
+        <div class="level">
+          <div class="sublabel">Gear type <span class="hint">(choose up to two)</span></div>
+          <div class="opts" id="gearOpts">
+            <label class="chip"><input type="checkbox" name="gear" value="FLY"><span>Flyfishing</span></label>
+            <label class="chip"><input type="checkbox" name="gear" value="LURE"><span>Lures</span></label>
+            <label class="chip"><input type="checkbox" name="gear" value="BAIT"><span>Baits</span></label>
+          </div>
+          <div class="muted" id="gearMax" style="display:none;margin-top:6px">You can pick up to two gear types.</div>
+          <div class="err" data-for="gear">Please choose at least one gear type.</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 class="sec">Your trip</h2>
+        <div class="grid2">
+          <label class="fld">
+            <span class="lbl">Anglers in party</span>
+            <input id="num_anglers" type="number" inputmode="numeric" min="1" max="6" step="1" value="1" required>
+          </label>
+          <label class="fld">
+            <span class="lbl">Rods used <span class="hint">(total in the party)</span></span>
+            <input id="num_rods" type="number" inputmode="numeric" min="1" max="6" step="1" placeholder="e.g. 2" required>
+            <div class="err" data-for="num_rods">Please enter the number of rods (1–6).</div>
+          </label>
+        </div>
+        <label class="fld">
+          <span class="lbl">Hours fished <span class="hint">(total for the party)</span></span>
+          <input id="hours_fished" type="number" inputmode="decimal" min="0.5" max="12" step="0.5" placeholder="e.g. 3.5" required>
+          <div class="err" data-for="hours_fished">Please enter hours fished (up to 12).</div>
+        </label>
+        <label class="fld">
+          <span class="lbl">How many years have you been fishing?</span>
+          <input id="years_fishing" type="number" inputmode="numeric" min="0" max="90" step="1" placeholder="e.g. 15" required>
+          <div class="err" data-for="years_fishing">Please enter how many years you've been fishing.</div>
+        </label>
+      </div>
+
+      <div class="card">
+        <h2 class="sec">What were you targeting?</h2>
+        <label class="fld">
+          <span class="lbl">Primary species you were targeting</span>
+          <select id="target_species_1" required></select>
+          <div class="err" data-for="target_species_1">Please choose a primary target (or “No preference”).</div>
+        </label>
+        <label class="fld">
+          <span class="lbl">Secondary species <span class="hint">(optional)</span></span>
+          <select id="target_species_2"></select>
+          <div class="muted" id="secNote" style="margin-top:6px;display:none">Not applicable when there's no specific primary target.</div>
+        </label>
+      </div>
+
+      <div class="card">
+        <h2 class="sec">What you caught</h2>
+        <p class="muted" style="margin:-4px 0 12px">Enter how many of each you caught and kept. Leave a species at 0 if you didn't catch it.</p>
+        <div id="catchList"></div>
+        <button type="button" class="btn ghost small" id="addCatch">+ Add another species</button>
+        <p class="muted" style="margin:10px 0 0">Only add a species beyond the two above if you're sure — e.g. an unexpected or invasive fish.</p>
+      </div>
+
+      <div class="card">
+        <h2 class="sec">Anything else? (optional)</h2>
+        <label class="fld">
+          <span class="lbl">Comment</span>
+          <textarea id="comment" rows="2" placeholder="Notes for the biologist (optional)"></textarea>
+        </label>
+      </div>
+
+      <button type="submit" class="btn primary" id="submitBtn">Submit my report</button>
+      <p class="muted" style="text-align:center;margin-top:12px">
+        Works without signal — your report is saved on your phone and sent automatically when you're back in range.
+      </p>
+    </form>
+
+    <details class="admin">
+      <summary>Organizer tools</summary>
+      <p><span class="qcount" id="qc">0</span> report(s) stored on this device.</p>
+      <div class="adminbtns">
+        <button class="btn small" id="exportJson">Export reports (JSON)</button>
+        <button class="btn small" id="exportCsv">Export reports (CSV)</button>
+        <button class="btn small" id="clearQueue">Clear stored reports</button>
+      </div>
+      <p class="muted" style="margin-top:10px">Export feeds the workbook-builder script that produces the FFSBC upload template.</p>
+    </details>
+
+    <footer>Marquart Lake creel · project FFSBC46_23 · prototype v0.4</footer>
+  </div>
+
+  <div id="doneView" class="card done hidden">
+    <div class="check"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></div>
+    <h2>Thank you!</h2>
+    <p class="muted" id="doneMsg">Your catch report has been saved.</p>
+    <button class="btn primary" id="againBtn" style="margin-top:18px">Report another trip</button>
+  </div>
+</div>
+
+<script>
+window.SPECIES_DATA=[{"code": "ABT", "name": "Anadromous Bull Trout"}, {"code": "AC", "name": "Arctic Char"}, {"code": "ACT", "name": "Coastal Cutthroat (anadromous)"}, {"code": "ADV", "name": "Anadromous Dolly Varden"}, {"code": "AEB", "name": "Anadromous Eastern Brook Trout"}, {"code": "AGB", "name": "Anadromous Brown Trout"}, {"code": "AL", "name": "Arctic Lamprey"}, {"code": "AS", "name": "Atlantic Salmon"}, {"code": "BB", "name": "Burbot"}, {"code": "BCB", "name": "Black Crappie"}, {"code": "BH", "name": "Catfish"}, {"code": "BKH", "name": "Black Bullhead"}, {"code": "BL", "name": "Western Brook Lamprey"}, {"code": "BMC", "name": "Brassy Minnow"}, {"code": "BNH", "name": "Brown Catfish"}, {"code": "BS", "name": "Bass (Large and Small Mouth)"}, {"code": "BSB", "name": "Brook Stickleback"}, {"code": "BSU", "name": "Bridgelip Sucker"}, {"code": "BT", "name": "Bull Trout"}, {"code": "BW", "name": "Broad Whitefish"}, {"code": "C", "name": "Minnow (General)"}, {"code": "CA", "name": "Arctic Cisco"}, {"code": "CAL", "name": "Coastrange Sculpin"}, {"code": "CAS", "name": "Prickly Sculpin"}, {"code": "CB", "name": "Bering Cisco"}, {"code": "CBA", "name": "Mottled Sculpin"}, {"code": "CBC", "name": "Chub (General)"}, {"code": "CC", "name": "Sculpin"}, {"code": "CCA", "name": "Sharpnose Sculpin"}, {"code": "CCG", "name": "Slimy Sculpin"}, {"code": "CCL", "name": "Cultus Lake Sculpin"}, {"code": "CCN", "name": "Shorthead Sculpin"}, {"code": "CCT", "name": "Coastal Cutthroat Trout"}, {"code": "CH", "name": "Chinook Salmon"}, {"code": "CL", "name": "Lake Cisco"}, {"code": "CLA", "name": "Pacific Staghorn Sculpin"}, {"code": "CM", "name": "Chum Salmon"}, {"code": "CMC", "name": "Chiselmouth"}, {"code": "CMT", "name": "Deepwater Sculpin"}, {"code": "CO", "name": "Coho Salmon"}, {"code": "COM", "name": "Tidepool Sculpin"}, {"code": "CP", "name": "Carp"}, {"code": "CRH", "name": "Torrent Sculpin"}, {"code": "CRI", "name": "Spoonhead Sculpin"}, {"code": "CRS", "name": "Cutthroat/Rainbow Cross"}, {"code": "CS", "name": "Least Cisco"}, {"code": "CSB", "name": "Unarmoured Stickleback"}, {"code": "CSU", "name": "Large Scale Sucker"}, {"code": "DC", "name": "Dace (General)"}, {"code": "DLW", "name": "Dragon Lake Whitefish"}, {"code": "DV", "name": "Dolly Varden Char"}, {"code": "EB", "name": "Eastern Brook Trout"}, {"code": "ESC", "name": "Emerald Shiner"}, {"code": "EU", "name": "Eulachon"}, {"code": "FDC", "name": "Finescale Dace"}, {"code": "FHC", "name": "Flathead Chub"}, {"code": "FM", "name": "Fathead Minnow"}, {"code": "GAM", "name": "Mosquitofish"}, {"code": "GB", "name": "Brown Trout"}, {"code": "GE", "name": "Goldeye"}, {"code": "GPW", "name": "Giant Pygmy Whitefish"}, {"code": "GR", "name": "Arctic Grayling"}, {"code": "GSG", "name": "Green Sturgeon"}, {"code": "IN", "name": "Inconnu"}, {"code": "KO", "name": "Kokanee"}, {"code": "L", "name": "Lampreys (General)"}, {"code": "LDC", "name": "Leopard Dace"}, {"code": "LKC", "name": "Lake Chub"}, {"code": "LL", "name": "Lake Lamprey"}, {"code": "LMB", "name": "Large Mouth Bass"}, {"code": "LNC", "name": "Longnose Dace"}, {"code": "LSM", "name": "Longfin Smelt"}, {"code": "LSU", "name": "Longnose Sucker"}, {"code": "LT", "name": "Lake Trout"}, {"code": "LW", "name": "Lake Whitefish"}, {"code": "MCL", "name": "Morrison Creek Lamprey"}, {"code": "MG", "name": "Montana Grayling"}, {"code": "MSU", "name": "Mountain Sucker"}, {"code": "MW", "name": "Mountain Whitefish"}, {"code": "MX", "name": "Mixed"}, {"code": "NDC", "name": "Nooksack Dace"}, {"code": "NP", "name": "Northern Pike"}, {"code": "NSB", "name": "Ninespine Stickleback"}, {"code": "NSC", "name": "Northern Pike Minnow"}, {"code": "P", "name": "Perch (General)"}, {"code": "PCC", "name": "Peamouth Chub"}, {"code": "PDC", "name": "Pearl Dace"}, {"code": "PK", "name": "Pink Salmon"}, {"code": "PL", "name": "Pacific Lamprey"}, {"code": "PLS", "name": "Pygmy Longfin Smelt"}, {"code": "PMB", "name": "Pumpkinseed"}, {"code": "PW", "name": "Pygmy Whitefish"}, {"code": "RB", "name": "Rainbow Trout"}, {"code": "RBCT", "name": "Rainbow Cutthroat"}, {"code": "RDC", "name": "Northern Redbelly Dace"}, {"code": "RL", "name": "River Lamprey"}, {"code": "RSC", "name": "Redside Shiner"}, {"code": "RSM", "name": "Rainbow Smelt"}, {"code": "RW", "name": "Round Whitefish"}, {"code": "SA", "name": "Salmon (General)"}, {"code": "SB", "name": "Stickleback (General)"}, {"code": "SB1", "name": "Balkwill Lake Benthic Stickleback"}, {"code": "SB10", "name": "Hadley Lake Limnetic Stickleback"}, {"code": "SB11", "name": "Lake Sticklebacks"}, {"code": "SB12", "name": "Paxton Lake Benthic Stickleback"}, {"code": "SB13", "name": "Paxton Lake Limnetic Stickleback"}, {"code": "SB2", "name": "Balkwill Lake Limnetic Sticleback"}, {"code": "SB3", "name": "Charlotte Unarmoured Stickleback"}, {"code": "SB4", "name": "Emily Lake Benthic Stickleback"}, {"code": "SB5", "name": "Emily Lake Limnetic Stickleback"}, {"code": "SB6", "name": "Enos Lake Benthic Stickleback"}, {"code": "SB7", "name": "Enos Lake Limnetic Stickleback"}, {"code": "SB8", "name": "Giant Stickleback"}, {"code": "SB9", "name": "Hadley Lake Benthic Stickleback"}, {"code": "SBB", "name": "Priest Lake Benthic Stickleback"}, {"code": "SBP", "name": "Priest Lake Limnetic Stickleback"}, {"code": "SDC", "name": "Speckled Dace"}, {"code": "SF", "name": "Sunfish"}, {"code": "SG", "name": "Sturgeon (General)"}, {"code": "SH", "name": "American Shad"}, {"code": "SK", "name": "Sockeye Salmon"}, {"code": "SM", "name": "Smelts (General)"}, {"code": "SMB", "name": "Small Mouth Bass"}, {"code": "SPK", "name": "Splake"}, {"code": "SQ", "name": "Squanga"}, {"code": "SSM", "name": "Surf Smelt"}, {"code": "SSU", "name": "Salish Sucker"}, {"code": "ST", "name": "Steelhead"}, {"code": "STC", "name": "Spottail Shiner"}, {"code": "SU", "name": "Sucker"}, {"code": "TC", "name": "Tench"}, {"code": "TP", "name": "Troutperch"}, {"code": "TR", "name": "Trout General"}, {"code": "TSB", "name": "Three Spine Stickleback"}, {"code": "UDC", "name": "Umatilla Dace"}, {"code": "WCT", "name": "Westslope Cutthroat"}, {"code": "WF", "name": "Whitefish (general)"}, {"code": "WP", "name": "Walleye"}, {"code": "WSG", "name": "White Sturgeon"}, {"code": "WSU", "name": "White Sucker"}, {"code": "YP", "name": "Yellow Perch"}, {"code": "BG", "name": "Bluegill"}, {"code": "CCH", "name": "Columbia Sculpin"}, {"code": "CHMC", "name": "Blotched Snakehead"}, {"code": "CMM", "name": "Malheur Mottled Sculpin"}, {"code": "CPG", "name": "Carp (General)"}, {"code": "CRM", "name": "Rocky Mountain Sculpin"}, {"code": "CYAG", "name": "Shiner Perch"}, {"code": "DVxBT", "name": "Verified DV BT hybrid"}, {"code": "GT", "name": "Golden Trout"}, {"code": "MWxRW", "name": "Mountain x Round Whitefish hybrid"}, {"code": "OWF", "name": "Oriental Weatherfish"}, {"code": "SB14", "name": "Misty Lake Lake Stickleback"}, {"code": "SB15", "name": "Misty Lake Stream Stickleback"}, {"code": "SLV", "name": "Char (General)"}, {"code": "TMP", "name": "Tiger Muskellunge"}, {"code": "YB", "name": "Yellow Bullhead"}];
+</script>
+<script>
+/* ---------- Constants for THIS lake (would come from the QR code per lake) ---------- */
+const EVENT = {
+  assessment_event_name:"00848LNIC_2026_1_S", waterbody_id:"00848LNIC", waterbody_name:"MARQUART",
+  project_code:"FFSBC46_23", source:"Mobile Survey",
+  survey_type:"CR", trip_complete:"COMPLETE", location_description:"Mobile_App"
+};
+const STOCKED = ["RB","EB"];
+const NO_PREF_CODE = "TR";
+const SPECIES = window.SPECIES_DATA;
+const SP_MAP = Object.fromEntries(SPECIES.map(s=>[s.code,s.name]));
+const QKEY = "marquart_creel_queue_v1";
+const DKEY = "marquart_device_id";
+
+/* Persistent, non-personal device token: lets you spot when reports across
+   different days likely came from the same phone. Resets if storage is cleared. */
+function deviceId(){
+  let id; try{ id=localStorage.getItem(DKEY); }catch(e){}
+  if(!id){
+    id=(self.crypto&&crypto.randomUUID)?crypto.randomUUID():("dev-"+Math.random().toString(36).slice(2,10));
+    try{ localStorage.setItem(DKEY,id); }catch(e){}
+  }
+  return id;
+}
+
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const loadQueue = () => { try{return JSON.parse(localStorage.getItem(QKEY))||[]}catch(e){return []} };
+const saveQueue = q => { try{localStorage.setItem(QKEY, JSON.stringify(q))}catch(e){} };
+function todayISO(){ const d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+function nowHM(){ const d=new Date(); return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0"); }
+/* A unique client-side reference for this submission. NOT the FFSBC party_id —
+   party_id (1–500, reset per lake-day) is assigned by the transform when the day's
+   reports are assembled, which avoids collisions between phones. */
+function makeClientRef(){
+  const d=new Date();
+  const s=d.getFullYear().toString().slice(2)+String(d.getMonth()+1).padStart(2,"0")+String(d.getDate()).padStart(2,"0")
+         +String(d.getHours()).padStart(2,"0")+String(d.getMinutes()).padStart(2,"0")+String(d.getSeconds()).padStart(2,"0");
+  return "MQ-"+s+"-"+Math.random().toString(36).slice(2,5).toUpperCase();
+}
+
+/* ---------- Vessel → Method → Gear ---------- */
+function vesselValue(){ const el=$('input[name="vessel"]:checked'); return el?el.value:""; }
+function methodValue(){
+  if(vesselValue()==="ICE") return "ICE";
+  const m=$$('input[name="method"]:checked').map(e=>e.value);
+  if(m.includes("TROLL") && m.includes("CAST")) return "MIX";   // both selected -> MIX
+  if(m.includes("TROLL")) return "TROLL";
+  if(m.includes("CAST")) return "CAST";
+  return "";
+}
+/* Ice fishing only offered in-season (Nov–Apr, by the date fished). */
+function iceAllowed(){
+  const d=$("#interview_date").value; if(!d) return false;
+  const mo=+d.slice(5,7); return mo>=11 || (mo>=1 && mo<=4);
+}
+function updateIce(){
+  const allow=iceAllowed();
+  $("#iceChip").classList.toggle("hidden", !allow);
+  if(!allow){ const ice=$('input[name="vessel"][value="ICE"]'); if(ice.checked) ice.checked=false; }
+  onVesselChange();
+}
+$("#interview_date")&&$("#interview_date").addEventListener("change", updateIce);
+function gearSelected(){ return $$('input[name="gear"]:checked').map(e=>e.value); }
+/* Map a set of gear choices to FFSBC's terminal_gear code (singles + pairs only). */
+function gearCode(sel){
+  const k=[...sel].sort().join("+");
+  return {"BAIT":"BAIT","FLY":"FLY","LURE":"LURE","FLY+LURE":"FLY-LURE","BAIT+FLY":"BAIT-FLY","BAIT+LURE":"BAIT-LR"}[k] || null;
+}
+function onVesselChange(){
+  const ice = vesselValue()==="ICE";
+  $("#methodLevel").classList.toggle("hidden", ice);
+  $("#iceHint").classList.toggle("hidden", !ice);
+  if(ice){ $$('input[name="method"]').forEach(r=>r.checked=false); }
+}
+$$('input[name="vessel"]').forEach(r=>r.addEventListener("change", onVesselChange));
+
+/* Gear caps at two (FFSBC has no three-gear code): disable the rest once two are picked. */
+function onGearChange(){
+  const boxes=$$('input[name="gear"]');
+  const atMax=boxes.filter(b=>b.checked).length>=2;
+  boxes.forEach(b=>{ if(!b.checked) b.disabled=atMax; });
+  $("#gearMax").style.display = atMax ? "block" : "none";
+}
+$$('input[name="gear"]').forEach(b=>b.addEventListener("change", onGearChange));
+
+/* Number hygiene: strip leading zeros as you type; clamp to min/max on blur. */
+$("#creelForm").addEventListener("input", e=>{
+  const el=e.target;
+  if(el.type==="number" && /^0\d/.test(el.value)) el.value=el.value.replace(/^0+(?=\d)/,"");
+});
+$("#creelForm").addEventListener("change", e=>{
+  const el=e.target;
+  if(el.type==="number" && el.value!==""){
+    const lo=el.min!==""?+el.min:-Infinity, hi=el.max!==""?+el.max:Infinity;
+    let v=+el.value; if(isNaN(v)){el.value="";return;}
+    if(v<lo)v=lo; if(v>hi)v=hi; el.value=String(v);
+  }
+  if(el.id==="hours_fished") updateCatchMaxima();
+});
+/* Caught can't exceed 10 × hours fished — reflect that as the caught field's max. */
+function updateCatchMaxima(){
+  const hrs=+$("#hours_fished").value||0;
+  const maxC=Math.floor(10*hrs);
+  $$('.catch .caught').forEach(c=>{ if(maxC>0) c.max=maxC; else c.removeAttribute("max"); });
+}
+
+/* ---------- Target-species dropdowns: Stocked first, then Other ---------- */
+function targetOptions(sel, {primary}){
+  const others=[...SPECIES].filter(s=>!STOCKED.includes(s.code)).sort((a,b)=>a.name.localeCompare(b.name));
+  let h = primary
+    ? `<option value="">Select…</option><option value="${NO_PREF_CODE}">No preference / unsure</option>`
+    : `<option value="">None</option>`;
+  h += '<optgroup label="Stocked in Marquart">';
+  STOCKED.forEach(c=>{ if(SP_MAP[c]) h+=`<option value="${c}">${SP_MAP[c]}</option>`; });
+  h += '</optgroup><optgroup label="Other species (A–Z)">';
+  others.forEach(s=>{ h+=`<option value="${s.code}">${s.name}</option>`; });
+  h += '</optgroup>';
+  sel.innerHTML=h;
+}
+targetOptions($("#target_species_1"),{primary:true});
+targetOptions($("#target_species_2"),{primary:false});
+
+/* No preference (TR) => secondary greyed + forced None (no specific target implies nothing to pair) */
+function syncSecondary(){
+  const noPref = $("#target_species_1").value===NO_PREF_CODE;
+  const sec=$("#target_species_2");
+  if(noPref){ sec.value=""; sec.disabled=true; $("#secNote").style.display="block"; }
+  else { sec.disabled=false; $("#secNote").style.display="none"; }
+}
+$("#target_species_1").addEventListener("change", syncSecondary);
+
+/* ---------- Catch rows ---------- */
+function stockedRowHTML(code){
+  return `<div class="catch stocked" data-code="${code}">
+    <div class="top"><span class="n">${SP_MAP[code]}</span><span class="tag">Stocked</span></div>
+    <div class="kc">
+      <label class="fld" style="margin:0"><span class="lbl" style="font-size:13px">Number caught</span>
+        <input class="caught" type="number" inputmode="numeric" min="0" step="1" placeholder="0"></label>
+      <label class="fld" style="margin:0"><span class="lbl" style="font-size:13px">Number kept</span>
+        <input class="kept" type="number" inputmode="numeric" min="0" step="1" placeholder="0"></label>
+    </div>
+    <div class="err">Check the numbers: kept can't exceed caught, and caught can't exceed 10× hours fished.</div>
+  </div>`;
+}
+function addSpeciesRow(){
+  const others=[...SPECIES].filter(s=>!STOCKED.includes(s.code)).sort((a,b)=>a.name.localeCompare(b.name));
+  let opts='<option value="">Select a species…</option><optgroup label="Stocked in Marquart">';
+  STOCKED.forEach(c=>{ if(SP_MAP[c]) opts+=`<option value="${c}">${SP_MAP[c]}</option>`; });
+  opts+='</optgroup><optgroup label="Other species (A–Z)">';
+  others.forEach(s=>{ opts+=`<option value="${s.code}">${s.name}</option>`; });
+  opts+='</optgroup>';
+  const div=document.createElement("div");
+  div.className="catch"; div.dataset.added="1";
+  div.innerHTML=`<div class="top"><span class="n">Other species</span><button type="button" class="rm">Remove</button></div>
+    <select class="sp" required>${opts}</select>
+    <div class="kc">
+      <label class="fld" style="margin:0"><span class="lbl" style="font-size:13px">Number caught</span>
+        <input class="caught" type="number" inputmode="numeric" min="0" step="1" placeholder="0" required></label>
+      <label class="fld" style="margin:0"><span class="lbl" style="font-size:13px">Number kept</span>
+        <input class="kept" type="number" inputmode="numeric" min="0" step="1" placeholder="0"></label>
+    </div>
+    <div class="err">Pick a species and a number caught. Kept can't exceed caught, and caught can't exceed 10× hours fished.</div>`;
+  div.querySelector(".rm").onclick=()=>div.remove();
+  $("#catchList").appendChild(div);
+}
+function seedCatchList(){ $("#catchList").innerHTML = STOCKED.map(stockedRowHTML).join(""); }
+$("#addCatch").onclick=addSpeciesRow;
+
+/* ---------- Validation + submit ---------- */
+function clearErrs(){ $$('.err').forEach(e=>e.classList.remove('show')); }
+function showErr(name){ const e=$(`.err[data-for="${name}"]`); if(e)e.classList.add('show'); }
+
+$("#creelForm").addEventListener("submit", e=>{
+  e.preventDefault();
+  clearErrs();
+  let ok=true;
+  const vessel=vesselValue();
+  const method=methodValue();
+  const gear=gearSelected();
+  if(!vessel){ showErr("vessel"); ok=false; }
+  if(vessel!=="ICE" && !method){ showErr("method"); ok=false; }
+  if(gear.length===0){ showErr("gear"); ok=false; }
+  [["interview_date","#interview_date"],["num_rods","#num_rods"],["hours_fished","#hours_fished"],
+   ["years_fishing","#years_fishing"],["target_species_1","#target_species_1"]].forEach(([n,s])=>{
+    if($(s).value===""){ showErr(n); ok=false; }
+  });
+
+  const hrs=+$("#hours_fished").value||0;
+  const maxCaught=Math.floor(10*hrs);   // caught can't exceed 10× hours fished
+  const catches=[];
+  $$('.catch').forEach(r=>{
+    const added=r.dataset.added==="1";
+    const code=added ? r.querySelector('.sp').value : r.dataset.code;
+    const cRaw=r.querySelector('.caught').value, kRaw=r.querySelector('.kept').value;
+    const caught=cRaw===""?0:+cRaw, kept=kRaw===""?0:+kRaw;
+    const err=r.querySelector('.err');
+    if(added && (!code || cRaw==="")){ err.classList.add('show'); ok=false; return; }
+    if(kept>caught || caught>maxCaught){ err.classList.add('show'); ok=false; return; }
+    if(code) catches.push({species:code, num_caught:caught, num_kept:kept});
+  });
+  if(!ok){ window.scrollTo({top:0,behavior:'smooth'}); return; }
+
+  const primary=$("#target_species_1").value;
+  const rec={
+    client_ref:makeClientRef(), person_id:1, device_id:deviceId(),
+    assessment_event_name:EVENT.assessment_event_name, survey_type:EVENT.survey_type,
+    interview_date:$("#interview_date").value, interview_time:nowHM(),
+    trip_complete:EVENT.trip_complete, location_description:EVENT.location_description,
+    fishing_mode:vessel,
+    num_anglers:+$("#num_anglers").value||1,
+    num_rods:+$("#num_rods").value,
+    hours_fished:+$("#hours_fished").value,
+    angling_method:method,
+    terminal_gear:gearCode(gear),                 // FFSBC code (null if 3 gears picked)
+    terminal_gear_selected:gear,                  // raw multi-select, kept for reference
+    years_fishing:+$("#years_fishing").value,
+    target_species_1:primary,
+    target_species_2:(primary===NO_PREF_CODE)?null:($("#target_species_2").value||null),
+    comment:$("#comment").value.trim()||null,
+    catches:catches,
+    created_at:new Date().toISOString(), sync_status:"pending"
+  };
+
+  const q=loadQueue(); q.push(rec); saveQueue(q);
+  refreshCount(); trySync();
+  $("#doneMsg").textContent = navigator.onLine
+    ? "Your catch report has been submitted. Tight lines!"
+    : "Saved on your phone. It'll send automatically once you're back in signal.";
+  $("#formView").classList.add("hidden");
+  $("#doneView").classList.remove("hidden");
+  window.scrollTo({top:0});
+});
+
+function setDefaultDate(){ const t=todayISO(); const di=$("#interview_date"); di.value=t; di.max=t; }
+$("#againBtn").onclick=()=>{
+  $("#creelForm").reset();
+  setDefaultDate();
+  onVesselChange(); onGearChange(); syncSecondary(); seedCatchList();
+  updateIce(); updateCatchMaxima();
+  $("#doneView").classList.add("hidden");
+  $("#formView").classList.remove("hidden");
+};
+
+/* ---------- Sync (placeholder backend) ---------- */
+const ENDPOINT = ""; // set to your Azure Function / Apps Script URL. Empty = queue only.
+async function trySync(){
+  if(!ENDPOINT || !navigator.onLine) return;
+  const q=loadQueue(); let changed=false;
+  for(const r of q){ if(r.sync_status==="sent") continue;
+    try{ const res=await fetch(ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(r)});
+      if(res.ok){ r.sync_status="sent"; changed=true; } }catch(e){} }
+  if(changed) saveQueue(q);
+}
+window.addEventListener("online", ()=>{ updateNet(); trySync(); });
+window.addEventListener("offline", updateNet);
+function updateNet(){ const on=navigator.onLine; $("#net").classList.toggle("off",!on); $("#netTxt").textContent=on?"Online":"Offline — reports will queue"; }
+
+/* ---------- Organizer export ---------- */
+function download(name,text,type){ const b=new Blob([text],{type}); const u=URL.createObjectURL(b);
+  const a=document.createElement("a"); a.href=u; a.download=name; a.click(); setTimeout(()=>URL.revokeObjectURL(u),1500); }
+$("#exportJson").onclick=()=>download("marquart_reports_"+todayISO()+".json",JSON.stringify(loadQueue(),null,2),"application/json");
+$("#exportCsv").onclick=()=>{
+  const q=loadQueue();
+  const rows=[["client_ref","device_id","person_id","interview_date","interview_time","fishing_mode","num_anglers","num_rods","hours_fished","angling_method","terminal_gear","gear_selected","years_fishing","target_species_1","target_species_2","species","num_caught","num_kept","comment"]];
+  q.forEach(r=>{
+    const base=[r.client_ref??r.party_id??"",r.device_id??"",r.person_id,r.interview_date,r.interview_time,r.fishing_mode,r.num_anglers,r.num_rods,r.hours_fished,r.angling_method,r.terminal_gear??"",(r.terminal_gear_selected||[]).join("+"),r.years_fishing??"",r.target_species_1,r.target_species_2??""];
+    if(!r.catches||!r.catches.length){ rows.push([...base,"","","",r.comment??""]); }
+    else r.catches.forEach(c=>rows.push([...base,c.species,c.num_caught,c.num_kept,r.comment??""]));
+  });
+  const csv=rows.map(r=>r.map(v=>{v=String(v??"");return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}).join(",")).join("\n");
+  download("marquart_reports_"+todayISO()+".csv",csv,"text/csv");
+};
+$("#clearQueue").onclick=()=>{ if(confirm("Delete all reports stored on this device?")){ saveQueue([]); refreshCount(); } };
+function refreshCount(){ $("#qc").textContent=loadQueue().length; }
+
+/* ---------- Init ---------- */
+setDefaultDate();
+onVesselChange(); onGearChange(); syncSecondary(); seedCatchList();
+updateIce(); updateCatchMaxima();
+updateNet(); refreshCount(); trySync();
+if("serviceWorker" in navigator){ navigator.serviceWorker.register("sw.js").catch(()=>{}); }
+</script>
+</body>
+</html>
