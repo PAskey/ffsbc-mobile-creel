@@ -124,6 +124,17 @@
 </header>
 
 <div class="wrap">
+  <!-- Hidden static form: lets Netlify register the "creel-report" form (and its
+       fields) at deploy time. Actual reports are sent by fetch() in the script. -->
+  <form name="creel-report" data-netlify="true" netlify-honeypot="bot-field" hidden>
+    <input type="hidden" name="form-name" value="creel-report">
+    <p hidden><label>Leave blank: <input name="bot-field"></label></p>
+    <input type="text" name="payload">
+    <input type="text" name="client_ref">
+    <input type="text" name="interview_date">
+    <input type="text" name="fishing_mode">
+  </form>
+
   <div id="formView">
     <div class="card autobox">
       <div class="autorow"><span>Lake</span><span>Marquart</span></div>
@@ -190,14 +201,9 @@
           </label>
         </div>
         <label class="fld">
-          <span class="lbl">Hours fished <span class="hint">(total for the party)</span></span>
+          <span class="lbl">Hours fished</span>
           <input id="hours_fished" type="number" inputmode="decimal" min="0.5" max="12" step="0.5" placeholder="e.g. 3.5" required>
           <div class="err" data-for="hours_fished">Please enter hours fished (up to 12).</div>
-        </label>
-        <label class="fld">
-          <span class="lbl">How many years have you been fishing?</span>
-          <input id="years_fishing" type="number" inputmode="numeric" min="0" max="90" step="1" placeholder="e.g. 15" required>
-          <div class="err" data-for="years_fishing">Please enter how many years you've been fishing.</div>
         </label>
       </div>
 
@@ -221,6 +227,15 @@
         <div id="catchList"></div>
         <button type="button" class="btn ghost small" id="addCatch">+ Add another species</button>
         <p class="muted" style="margin:10px 0 0">Only add a species beyond the two above if you're sure — e.g. an unexpected or invasive fish.</p>
+      </div>
+
+      <div class="card">
+        <h2 class="sec">Experience level</h2>
+        <label class="fld" style="margin:0">
+          <span class="lbl">How many years have you been fishing?</span>
+          <input id="years_fishing" type="number" inputmode="numeric" min="0" max="90" step="1" placeholder="e.g. 15" required>
+          <div class="err" data-for="years_fishing">Please enter how many years you've been fishing.</div>
+        </label>
       </div>
 
       <div class="card">
@@ -506,14 +521,18 @@ $("#againBtn").onclick=()=>{
   $("#formView").classList.remove("hidden");
 };
 
-/* ---------- Sync (placeholder backend) ---------- */
-const ENDPOINT = ""; // set to your Azure Function / Apps Script URL. Empty = queue only.
+/* ---------- Sync to Netlify Forms ---------- */
+const FORM_NAME = "creel-report"; // Netlify Forms name (declared as a hidden static form above).
+function encodeForm(o){ return Object.keys(o).map(k=>encodeURIComponent(k)+"="+encodeURIComponent(o[k])).join("&"); }
 async function trySync(){
-  if(!ENDPOINT || !navigator.onLine) return;
+  if(!navigator.onLine) return;
   const q=loadQueue(); let changed=false;
   for(const r of q){ if(r.sync_status==="sent") continue;
-    try{ const res=await fetch(ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(r)});
-      if(res.ok){ r.sync_status="sent"; changed=true; } }catch(e){} }
+    try{
+      const body=encodeForm({"form-name":FORM_NAME,payload:JSON.stringify(r),client_ref:r.client_ref||"",interview_date:r.interview_date||"",fishing_mode:r.fishing_mode||""});
+      const res=await fetch("/",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body});
+      if(res.ok){ r.sync_status="sent"; changed=true; }
+    }catch(e){} }
   if(changed) saveQueue(q);
 }
 window.addEventListener("online", ()=>{ updateNet(); trySync(); });

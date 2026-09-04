@@ -1,5 +1,5 @@
 /* Marquart Lake Creel — offline service worker */
-const CACHE = "marquart-creel-v1";
+const CACHE = "marquart-creel-v2";
 const ASSETS = [
   "./",
   "./index.html",
