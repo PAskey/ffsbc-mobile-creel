@@ -1,7 +1,7 @@
 {
-  "name": "Marquart Lake Creel",
+  "name": "FFSBC Creel Survey",
   "short_name": "Creel",
-  "description": "Report your catch at Marquart Lake — Freshwater Fisheries Society of BC.",
+  "description": "Report your catch at Marquart Lake \u2014 Freshwater Fisheries Society of BC.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
@@ -9,7 +9,17 @@
   "background_color": "#0d5c63",
   "theme_color": "#0d5c63",
   "icons": [
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
   ]
 }

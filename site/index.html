@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0d5c63">
 <link rel="manifest" href="manifest.webmanifest">
-<title>Marquart Lake Creel</title>
+<title>FFSBC Creel Survey</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🎣%3C/text%3E%3C/svg%3E">
 <style>
   :root{
@@ -119,7 +119,7 @@
 <header class="app">
   <div class="kicker">Freshwater Fisheries Society of BC</div>
   <h1>Report Your Catch</h1>
-  <div class="lake">📍 Marquart Lake</div>
+  <div class="lake" id="lakeHdr">📍 Marquart Lake</div>
   <div class="net" id="net"><span class="dot"></span><span id="netTxt">Online</span></div>
 </header>
 
@@ -137,7 +137,7 @@
 
   <div id="formView">
     <div class="card autobox">
-      <div class="autorow"><span>Lake</span><span>Marquart</span></div>
+      <div class="autorow"><span>Lake</span><span id="lakeCell">Marquart</span></div>
       <label class="fld" style="margin:10px 0 0">
         <span class="lbl">Date fished</span>
         <input id="interview_date" type="date" required>
@@ -263,7 +263,7 @@
       <p class="muted" style="margin-top:10px">Export feeds the workbook-builder script that produces the FFSBC upload template.</p>
     </details>
 
-    <footer>Marquart Lake creel · project FFSBC46_23 · prototype v0.4</footer>
+    <footer id="appFooter">FFSBC creel survey</footer>
   </div>
 
   <div id="doneView" class="card done hidden">
@@ -278,13 +278,36 @@
 window.SPECIES_DATA=[{"code": "ABT", "name": "Anadromous Bull Trout"}, {"code": "AC", "name": "Arctic Char"}, {"code": "ACT", "name": "Coastal Cutthroat (anadromous)"}, {"code": "ADV", "name": "Anadromous Dolly Varden"}, {"code": "AEB", "name": "Anadromous Eastern Brook Trout"}, {"code": "AGB", "name": "Anadromous Brown Trout"}, {"code": "AL", "name": "Arctic Lamprey"}, {"code": "AS", "name": "Atlantic Salmon"}, {"code": "BB", "name": "Burbot"}, {"code": "BCB", "name": "Black Crappie"}, {"code": "BH", "name": "Catfish"}, {"code": "BKH", "name": "Black Bullhead"}, {"code": "BL", "name": "Western Brook Lamprey"}, {"code": "BMC", "name": "Brassy Minnow"}, {"code": "BNH", "name": "Brown Catfish"}, {"code": "BS", "name": "Bass (Large and Small Mouth)"}, {"code": "BSB", "name": "Brook Stickleback"}, {"code": "BSU", "name": "Bridgelip Sucker"}, {"code": "BT", "name": "Bull Trout"}, {"code": "BW", "name": "Broad Whitefish"}, {"code": "C", "name": "Minnow (General)"}, {"code": "CA", "name": "Arctic Cisco"}, {"code": "CAL", "name": "Coastrange Sculpin"}, {"code": "CAS", "name": "Prickly Sculpin"}, {"code": "CB", "name": "Bering Cisco"}, {"code": "CBA", "name": "Mottled Sculpin"}, {"code": "CBC", "name": "Chub (General)"}, {"code": "CC", "name": "Sculpin"}, {"code": "CCA", "name": "Sharpnose Sculpin"}, {"code": "CCG", "name": "Slimy Sculpin"}, {"code": "CCL", "name": "Cultus Lake Sculpin"}, {"code": "CCN", "name": "Shorthead Sculpin"}, {"code": "CCT", "name": "Coastal Cutthroat Trout"}, {"code": "CH", "name": "Chinook Salmon"}, {"code": "CL", "name": "Lake Cisco"}, {"code": "CLA", "name": "Pacific Staghorn Sculpin"}, {"code": "CM", "name": "Chum Salmon"}, {"code": "CMC", "name": "Chiselmouth"}, {"code": "CMT", "name": "Deepwater Sculpin"}, {"code": "CO", "name": "Coho Salmon"}, {"code": "COM", "name": "Tidepool Sculpin"}, {"code": "CP", "name": "Carp"}, {"code": "CRH", "name": "Torrent Sculpin"}, {"code": "CRI", "name": "Spoonhead Sculpin"}, {"code": "CRS", "name": "Cutthroat/Rainbow Cross"}, {"code": "CS", "name": "Least Cisco"}, {"code": "CSB", "name": "Unarmoured Stickleback"}, {"code": "CSU", "name": "Large Scale Sucker"}, {"code": "DC", "name": "Dace (General)"}, {"code": "DLW", "name": "Dragon Lake Whitefish"}, {"code": "DV", "name": "Dolly Varden Char"}, {"code": "EB", "name": "Eastern Brook Trout"}, {"code": "ESC", "name": "Emerald Shiner"}, {"code": "EU", "name": "Eulachon"}, {"code": "FDC", "name": "Finescale Dace"}, {"code": "FHC", "name": "Flathead Chub"}, {"code": "FM", "name": "Fathead Minnow"}, {"code": "GAM", "name": "Mosquitofish"}, {"code": "GB", "name": "Brown Trout"}, {"code": "GE", "name": "Goldeye"}, {"code": "GPW", "name": "Giant Pygmy Whitefish"}, {"code": "GR", "name": "Arctic Grayling"}, {"code": "GSG", "name": "Green Sturgeon"}, {"code": "IN", "name": "Inconnu"}, {"code": "KO", "name": "Kokanee"}, {"code": "L", "name": "Lampreys (General)"}, {"code": "LDC", "name": "Leopard Dace"}, {"code": "LKC", "name": "Lake Chub"}, {"code": "LL", "name": "Lake Lamprey"}, {"code": "LMB", "name": "Large Mouth Bass"}, {"code": "LNC", "name": "Longnose Dace"}, {"code": "LSM", "name": "Longfin Smelt"}, {"code": "LSU", "name": "Longnose Sucker"}, {"code": "LT", "name": "Lake Trout"}, {"code": "LW", "name": "Lake Whitefish"}, {"code": "MCL", "name": "Morrison Creek Lamprey"}, {"code": "MG", "name": "Montana Grayling"}, {"code": "MSU", "name": "Mountain Sucker"}, {"code": "MW", "name": "Mountain Whitefish"}, {"code": "MX", "name": "Mixed"}, {"code": "NDC", "name": "Nooksack Dace"}, {"code": "NP", "name": "Northern Pike"}, {"code": "NSB", "name": "Ninespine Stickleback"}, {"code": "NSC", "name": "Northern Pike Minnow"}, {"code": "P", "name": "Perch (General)"}, {"code": "PCC", "name": "Peamouth Chub"}, {"code": "PDC", "name": "Pearl Dace"}, {"code": "PK", "name": "Pink Salmon"}, {"code": "PL", "name": "Pacific Lamprey"}, {"code": "PLS", "name": "Pygmy Longfin Smelt"}, {"code": "PMB", "name": "Pumpkinseed"}, {"code": "PW", "name": "Pygmy Whitefish"}, {"code": "RB", "name": "Rainbow Trout"}, {"code": "RBCT", "name": "Rainbow Cutthroat"}, {"code": "RDC", "name": "Northern Redbelly Dace"}, {"code": "RL", "name": "River Lamprey"}, {"code": "RSC", "name": "Redside Shiner"}, {"code": "RSM", "name": "Rainbow Smelt"}, {"code": "RW", "name": "Round Whitefish"}, {"code": "SA", "name": "Salmon (General)"}, {"code": "SB", "name": "Stickleback (General)"}, {"code": "SB1", "name": "Balkwill Lake Benthic Stickleback"}, {"code": "SB10", "name": "Hadley Lake Limnetic Stickleback"}, {"code": "SB11", "name": "Lake Sticklebacks"}, {"code": "SB12", "name": "Paxton Lake Benthic Stickleback"}, {"code": "SB13", "name": "Paxton Lake Limnetic Stickleback"}, {"code": "SB2", "name": "Balkwill Lake Limnetic Sticleback"}, {"code": "SB3", "name": "Charlotte Unarmoured Stickleback"}, {"code": "SB4", "name": "Emily Lake Benthic Stickleback"}, {"code": "SB5", "name": "Emily Lake Limnetic Stickleback"}, {"code": "SB6", "name": "Enos Lake Benthic Stickleback"}, {"code": "SB7", "name": "Enos Lake Limnetic Stickleback"}, {"code": "SB8", "name": "Giant Stickleback"}, {"code": "SB9", "name": "Hadley Lake Benthic Stickleback"}, {"code": "SBB", "name": "Priest Lake Benthic Stickleback"}, {"code": "SBP", "name": "Priest Lake Limnetic Stickleback"}, {"code": "SDC", "name": "Speckled Dace"}, {"code": "SF", "name": "Sunfish"}, {"code": "SG", "name": "Sturgeon (General)"}, {"code": "SH", "name": "American Shad"}, {"code": "SK", "name": "Sockeye Salmon"}, {"code": "SM", "name": "Smelts (General)"}, {"code": "SMB", "name": "Small Mouth Bass"}, {"code": "SPK", "name": "Splake"}, {"code": "SQ", "name": "Squanga"}, {"code": "SSM", "name": "Surf Smelt"}, {"code": "SSU", "name": "Salish Sucker"}, {"code": "ST", "name": "Steelhead"}, {"code": "STC", "name": "Spottail Shiner"}, {"code": "SU", "name": "Sucker"}, {"code": "TC", "name": "Tench"}, {"code": "TP", "name": "Troutperch"}, {"code": "TR", "name": "Trout General"}, {"code": "TSB", "name": "Three Spine Stickleback"}, {"code": "UDC", "name": "Umatilla Dace"}, {"code": "WCT", "name": "Westslope Cutthroat"}, {"code": "WF", "name": "Whitefish (general)"}, {"code": "WP", "name": "Walleye"}, {"code": "WSG", "name": "White Sturgeon"}, {"code": "WSU", "name": "White Sucker"}, {"code": "YP", "name": "Yellow Perch"}, {"code": "BG", "name": "Bluegill"}, {"code": "CCH", "name": "Columbia Sculpin"}, {"code": "CHMC", "name": "Blotched Snakehead"}, {"code": "CMM", "name": "Malheur Mottled Sculpin"}, {"code": "CPG", "name": "Carp (General)"}, {"code": "CRM", "name": "Rocky Mountain Sculpin"}, {"code": "CYAG", "name": "Shiner Perch"}, {"code": "DVxBT", "name": "Verified DV BT hybrid"}, {"code": "GT", "name": "Golden Trout"}, {"code": "MWxRW", "name": "Mountain x Round Whitefish hybrid"}, {"code": "OWF", "name": "Oriental Weatherfish"}, {"code": "SB14", "name": "Misty Lake Lake Stickleback"}, {"code": "SB15", "name": "Misty Lake Stream Stickleback"}, {"code": "SLV", "name": "Char (General)"}, {"code": "TMP", "name": "Tiger Muskellunge"}, {"code": "YB", "name": "Yellow Bullhead"}];
 </script>
 <script>
-/* ---------- Constants for THIS lake (would come from the QR code per lake) ---------- */
+/* ---------- Per-lake config. The QR for each lake sets ?lake=<waterbody_id>. ----------
+   To add a lake: copy a line with its waterbody_id, display name, assessment
+   event name, and stocked species codes. Update event names each new year. */
+const LAKES = {
+  "00848LNIC": { name:"Marquart", event:"00848LNIC_2026_1_S", stocked:["EB","RB"] },
+  "00046OKAN": { name:"Churchill", event:"00046OKAN_2026_1_S", stocked:["EB","RB"] },
+  "00185OKAN": { name:"Becker", event:"00185OKAN_2026_1_S", stocked:["EB","RB"] },
+  "00557CLRH": { name:"Jeb", event:"00557CLRH_2026_1_S", stocked:["EB","RB"] },
+  "00619GUIC": { name:"Dot", event:"00619GUIC_2026_1_S", stocked:["EB","RB"] },
+  "00721GUIC": { name:"Tyner", event:"00721GUIC_2026_1_S", stocked:["EB","RB"] },
+  "00128SIML": { name:"Bluey", event:"00128SIML_2026_1_S", stocked:["KO","RB"] },
+  "00170GUIC": { name:"Stake", event:"00170GUIC_2026_1_S", stocked:["KO","RB"] },
+  "00400SMAR": { name:"Rockbluff", event:"00400SMAR_2026_1_S", stocked:["KO","RB"] },
+  "00639STHM": { name:"McConnell", event:"00639STHM_2026_1_S", stocked:["KO","RB"] },
+  "01915NICL": { name:"Alleyne", event:"01915NICL_2026_1_S", stocked:["KO","RB"] },
+  "01978NICL": { name:"Kentucky", event:"01978NICL_2026_1_S", stocked:["KO","RB"] }
+};
+const DEFAULT_LAKE = "00848LNIC"; // Marquart, used if ?lake= is missing or unknown
+function pickLake(){
+  let id=""; try{ id=new URLSearchParams(location.search).get("lake")||""; }catch(e){}
+  return LAKES[id] ? id : DEFAULT_LAKE;
+}
+const LAKE_ID = pickLake();
+const LAKE = LAKES[LAKE_ID];
 const EVENT = {
-  assessment_event_name:"00848LNIC_2026_1_S", waterbody_id:"00848LNIC", waterbody_name:"MARQUART",
-  project_code:"FFSBC46_23", source:"Mobile Survey",
+  assessment_event_name: LAKE.event, waterbody_id: LAKE_ID, waterbody_name: LAKE.name.toUpperCase(),
+  source:"Mobile Survey",
   survey_type:"CR", trip_complete:"COMPLETE", location_description:"Mobile_App"
 };
-const STOCKED = ["RB","EB"];
+const STOCKED = LAKE.stocked;
 const NO_PREF_CODE = "TR";
 const SPECIES = window.SPECIES_DATA;
 const SP_MAP = Object.fromEntries(SPECIES.map(s=>[s.code,s.name]));
@@ -315,7 +338,8 @@ function makeClientRef(){
   const d=new Date();
   const s=d.getFullYear().toString().slice(2)+String(d.getMonth()+1).padStart(2,"0")+String(d.getDate()).padStart(2,"0")
          +String(d.getHours()).padStart(2,"0")+String(d.getMinutes()).padStart(2,"0")+String(d.getSeconds()).padStart(2,"0");
-  return "MQ-"+s+"-"+Math.random().toString(36).slice(2,5).toUpperCase();
+  const pref=(LAKE.name.replace(/[^A-Za-z]/g,"").slice(0,3).toUpperCase()||"CR");
+  return pref+"-"+s+"-"+Math.random().toString(36).slice(2,5).toUpperCase();
 }
 
 /* ---------- Vessel → Method → Gear ---------- */
@@ -390,7 +414,7 @@ function targetOptions(sel, {primary}){
   let h = primary
     ? `<option value="">Select…</option><option value="${NO_PREF_CODE}">No preference / unsure</option>`
     : `<option value="">None</option>`;
-  h += '<optgroup label="Stocked in Marquart">';
+  h += '<optgroup label="Stocked in '+LAKE.name+'">';
   STOCKED.forEach(c=>{ if(SP_MAP[c]) h+=`<option value="${c}">${SP_MAP[c]}</option>`; });
   h += '</optgroup><optgroup label="Other species (A–Z)">';
   others.forEach(s=>{ h+=`<option value="${s.code}">${s.name}</option>`; });
@@ -424,7 +448,7 @@ function stockedRowHTML(code){
 }
 function addSpeciesRow(){
   const others=[...SPECIES].filter(s=>!STOCKED.includes(s.code)).sort((a,b)=>a.name.localeCompare(b.name));
-  let opts='<option value="">Select a species…</option><optgroup label="Stocked in Marquart">';
+  let opts='<option value="">Select a species…</option><optgroup label="Stocked in '+LAKE.name+'">';
   STOCKED.forEach(c=>{ if(SP_MAP[c]) opts+=`<option value="${c}">${SP_MAP[c]}</option>`; });
   opts+='</optgroup><optgroup label="Other species (A–Z)">';
   others.forEach(s=>{ opts+=`<option value="${s.code}">${s.name}</option>`; });
@@ -558,6 +582,12 @@ $("#clearQueue").onclick=()=>{ if(confirm("Delete all reports stored on this dev
 function refreshCount(){ $("#qc").textContent=loadQueue().length; }
 
 /* ---------- Init ---------- */
+document.title = LAKE.name+" Lake Creel";
+(function(){
+  const h=document.getElementById("lakeHdr"); if(h) h.textContent="📍 "+LAKE.name+" Lake";
+  const c=document.getElementById("lakeCell"); if(c) c.textContent=LAKE.name;
+  const f=document.getElementById("appFooter"); if(f) f.textContent=LAKE.name+" Lake · FFSBC creel survey";
+})();
 setDefaultDate();
 onVesselChange(); onGearChange(); syncSecondary(); seedCatchList();
 updateIce(); updateCatchMaxima();
