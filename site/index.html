@@ -149,6 +149,27 @@
 
     <form id="creelForm" novalidate>
       <div class="card">
+        <h2 class="sec">Your trip</h2>
+        <div class="icehint" style="margin-bottom:14px">Please submit <b>one report per group</b> fishing together for the same hours — everyone in a boat or party counts once (fishing on your own is a party of one).</div>
+        <div class="grid2">
+          <label class="fld">
+            <span class="lbl">Anglers in party</span>
+            <input id="num_anglers" type="number" inputmode="numeric" min="1" max="6" step="1" value="1" required>
+          </label>
+          <label class="fld">
+            <span class="lbl">Rods used <span class="hint">(fished simultaneously)</span></span>
+            <input id="num_rods" type="number" inputmode="numeric" min="1" max="6" step="1" placeholder="e.g. 2" required>
+            <div class="err" data-for="num_rods">Please enter the number of rods (1–6).</div>
+          </label>
+        </div>
+        <label class="fld">
+          <span class="lbl">Hours fished</span>
+          <input id="hours_fished" type="number" inputmode="decimal" min="0.5" max="12" step="0.5" placeholder="e.g. 3.5" required>
+          <div class="err" data-for="hours_fished">Please enter hours fished (up to 12).</div>
+        </label>
+      </div>
+
+      <div class="card">
         <h2 class="sec">How were you fishing?</h2>
 
         <div class="level">
@@ -185,26 +206,6 @@
           <div class="muted" id="gearMax" style="display:none;margin-top:6px">You can pick up to two gear types.</div>
           <div class="err" data-for="gear">Please choose at least one gear type.</div>
         </div>
-      </div>
-
-      <div class="card">
-        <h2 class="sec">Your trip</h2>
-        <div class="grid2">
-          <label class="fld">
-            <span class="lbl">Anglers in party</span>
-            <input id="num_anglers" type="number" inputmode="numeric" min="1" max="6" step="1" value="1" required>
-          </label>
-          <label class="fld">
-            <span class="lbl">Rods used <span class="hint">(total in the party)</span></span>
-            <input id="num_rods" type="number" inputmode="numeric" min="1" max="6" step="1" placeholder="e.g. 2" required>
-            <div class="err" data-for="num_rods">Please enter the number of rods (1–6).</div>
-          </label>
-        </div>
-        <label class="fld">
-          <span class="lbl">Hours fished</span>
-          <input id="hours_fished" type="number" inputmode="decimal" min="0.5" max="12" step="0.5" placeholder="e.g. 3.5" required>
-          <div class="err" data-for="hours_fished">Please enter hours fished (up to 12).</div>
-        </label>
       </div>
 
       <div class="card">

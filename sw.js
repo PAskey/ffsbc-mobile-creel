@@ -1,5 +1,5 @@
 /* Marquart Lake Creel — offline service worker */
-const CACHE = "ffsbc-creel-20260905-000503";
+const CACHE = "ffsbc-creel-__CACHE__";
 const ASSETS = [
   "./",
   "./index.html",

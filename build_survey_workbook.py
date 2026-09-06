@@ -24,7 +24,7 @@ data-validation / conditional-formatting *extensions* on the green tabs. For the
 real upload we should validate the output against the FFSBC submission site, or
 do this same fill in R (openxlsx preserves the template more faithfully).
 """
-import argparse, json, sys
+import argparse, json, sys, hashlib
 from collections import defaultdict
 import openpyxl
 
@@ -40,6 +40,17 @@ def header_map(ws, header_row=1):
 
 def read_row_as_dict(ws, hdr, row_idx):
     return {name: ws.cell(row=row_idx, column=col).value for name, col in hdr.items()}
+
+
+def device_code(sub):
+    """A short, stable, non-personal code for the phone that sent this report.
+    Derived deterministically from the app's random device_id (a UUID kept in the
+    phone's browser storage), so every report from the same phone gets the same
+    code and repeat responses group together. Returns None if no device_id."""
+    did = sub.get("device_id")
+    if not did:
+        return None
+    return hashlib.sha256(str(did).encode("utf-8")).hexdigest()[:8].upper()
 
 
 def clear_data_rows(ws, header_row=1, first_data_row=2):
@@ -86,6 +97,15 @@ def main():
     angler = wb["Angler"]
 
     p_hdr = header_map(party)
+
+    # New tracking column (not part of the FFSBC template): a short per-phone code,
+    # placed immediately after `comment` in the Party tab.
+    DEVICE_CODE_HEADER = "device_code"
+    if DEVICE_CODE_HEADER not in p_hdr:
+        after = p_hdr.get("comment", party.max_column)
+        dc_col = after + 1
+        party.cell(row=1, column=dc_col).value = DEVICE_CODE_HEADER
+        p_hdr[DEVICE_CODE_HEADER] = dc_col
     c_hdr = header_map(count)
     a_hdr = header_map(angler)
 
@@ -135,9 +155,10 @@ def main():
         pset(p_row, "hours_fished",           s.get("hours_fished"))
         pset(p_row, "target_species_1",       s.get("target_species_1"))
         pset(p_row, "target_species_2",       s.get("target_species_2"))
-        # angling_method / terminal_gear are collected per respondent -> Angler tab,
-        # so Party's copies of those columns are left blank on purpose.
+        pset(p_row, "angling_method",         s.get("angling_method"))
+        pset(p_row, "terminal_gear",          s.get("terminal_gear"))
         pset(p_row, "comment",                s.get("comment"))
+        pset(p_row, "device_code",            device_code(s))
         p_row += 1
         n_party += 1
 
@@ -145,14 +166,13 @@ def main():
         aen = val("assessment_event_name")
         pid = s["_pid"]
 
-        # ---- Angler row (the reporting angler) -------------------------
-        if any(s.get(k) not in (None, "") for k in ("angling_method", "terminal_gear", "years_fishing")):
+        # ---- Angler row: only the respondent-level datum we collect (years_fishing).
+        #      How the party fished (method/gear) now lives on the Party row.
+        if s.get("years_fishing") not in (None, ""):
             aset(a_row, "assessment_event_name", aen)
             aset(a_row, "interview_date",        s.get("interview_date"))
             aset(a_row, "party_id",              pid)
             aset(a_row, "person_id",             person_id)
-            aset(a_row, "angling_method",        s.get("angling_method"))
-            aset(a_row, "terminal_gear",         s.get("terminal_gear"))
             aset(a_row, "years_fishing",         s.get("years_fishing"))
             a_row += 1
             n_angler += 1
